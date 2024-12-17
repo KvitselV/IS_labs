@@ -27,7 +27,10 @@ class Repository:
     def get_all(self):
         return self.data
 
-
+    def remove_soiskatel(self, index):
+        if 0 <= index < len(self.data):
+            del self.data[index]
+            self.notify_observers()
 
     def attach_observer(self, observer):
         self.observers.append(observer)
@@ -57,6 +60,12 @@ class MainWindowView(tk.Tk):
 
         self.add_button = tk.Button(self.control_frame, text="Добавить запись")
         self.add_button.pack(side=tk.LEFT, padx=5)
+
+        self.edit_button = tk.Button(self.control_frame, text="Редактировать запись")
+        self.edit_button.pack(side=tk.LEFT, padx=5)
+
+        self.delete_button = tk.Button(self.control_frame, text="Удалить запись")
+        self.delete_button.pack(side=tk.LEFT, padx=5)
 
 class RecordView(tk.Toplevel):
     def __init__(self, master=None, fields=None, data=None, title="Окно записи"):
@@ -159,6 +168,12 @@ class RecordController:
         except ValueError as e:
             messagebox.showerror("Ошибка", str(e))
 
+class RecordDetailsController:
+    def __init__(self, repository, soiskatel):
+        self.repository = repository
+        self.soiskatel = soiskatel
+        self.view = RecordDetailsView(self.soiskatel)
+
 
 class MainController:
     def __init__(self):
@@ -171,6 +186,7 @@ class MainController:
     # Привязка кнопок
         self.view.add_button.config(command=self.add_record)
         self.view.edit_button.config(command=self.edit_record)
+        self.view.delete_button.config(command=self.delete_record)
         
         self.view.table.bind("<Double-1>", self.show_record_details)
 
@@ -189,6 +205,12 @@ class MainController:
         if selected_item:
             index = self.view.table.index(selected_item[0])
             RecordController(self.repository, self, mode="edit", record_index=index)
+    
+    def delete_record(self):
+        selected_item = self.view.table.selection()
+        if selected_item:
+            index = self.view.table.index(selected_item[0])
+            self.repository.remove_soiskatel(index)
             
     def update_table(self, soiskateli):
         """Обновление данных в таблице."""
