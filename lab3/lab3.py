@@ -39,6 +39,34 @@ class Repository:
         for observer in self.observers:
             observer.update()
 
+    def get_count(self):
+        """Возвращает общее количество записей."""
+        return len(self.data)
+
+    def get_k_n_short_list(self, k, n, field, reverse=False):
+        """
+        Возвращает n записей, начиная с k, отсортированные по полю.
+        :param k: Индекс начальной записи.
+        :param n: Количество записей для возврата.
+        :param field: Поле для сортировки.
+        :param reverse: Направление сортировки (по убыванию).
+        :return: Список записей.
+        """
+        field_map = {
+            "Фамилия": "fam",
+            "Имя": "imya",
+            "Профессия": "professiya",
+            "Квалификация": "kvalifikaciya",
+            "Дата рождения": "data_rozhdeniya",
+            "Телефон": "telefon",
+            "Адрес": "adres"
+        }
+        if field in field_map:
+            attribute = field_map[field]
+            sorted_data = sorted(self.data, key=lambda x: getattr(x, attribute), reverse=reverse)
+            return sorted_data[k:k + n]
+        return []
+
     
 # Виды
 class MainWindowView(tk.Tk):
@@ -66,6 +94,23 @@ class MainWindowView(tk.Tk):
 
         self.delete_button = tk.Button(self.control_frame, text="Удалить запись")
         self.delete_button.pack(side=tk.LEFT, padx=5)
+
+# Сортировка
+        self.sort_frame = tk.Frame(self)
+        self.sort_frame.pack(fill=tk.X)
+
+        self.sort_label = tk.Label(self.sort_frame, text="Сортировать по:")
+        self.sort_label.pack(side=tk.LEFT, padx=5)
+
+        self.sort_field = ttk.Combobox(self.sort_frame, values=["Фамилия", "Имя", "Профессия", "Квалификация", "Дата рождения", "Телефон", "Адрес"])
+        self.sort_field.set("Фамилия")
+        self.sort_field.pack(side=tk.LEFT, padx=5)
+
+        self.sort_asc_button = tk.Button(self.sort_frame, text="По возрастанию")
+        self.sort_asc_button.pack(side=tk.LEFT, padx=5)
+
+        self.sort_desc_button = tk.Button(self.sort_frame, text="По убыванию")
+        self.sort_desc_button.pack(side=tk.LEFT, padx=5)
 
 class RecordView(tk.Toplevel):
     def __init__(self, master=None, fields=None, data=None, title="Окно записи"):
@@ -187,6 +232,8 @@ class MainController:
         self.view.add_button.config(command=self.add_record)
         self.view.edit_button.config(command=self.edit_record)
         self.view.delete_button.config(command=self.delete_record)
+        self.view.sort_asc_button.config(command=self.sort_ascending)
+        self.view.sort_desc_button.config(command=self.sort_descending)
         
         self.view.table.bind("<Double-1>", self.show_record_details)
 
@@ -224,6 +271,22 @@ class MainController:
             self.view.table.delete(row)
         for soiskatel in self.repository.get_all():
             self.view.table.insert("", "end", values=(soiskatel.fam, soiskatel.imya, soiskatel.professiya))
+
+    def sort_and_display(self, reverse=False):
+        field = self.view.sort_field.get()
+        k = 0  # Начальный индекс
+        n = self.repository.get_count()  # Общее количество записей
+
+        sorted_list = self.repository.get_k_n_short_list(k, n, field, reverse)
+        self.update_table(sorted_list)
+
+    def sort_ascending(self):
+        """Сортировка по возрастанию."""
+        self.sort_and_display(reverse=False)
+
+    def sort_descending(self):
+        """Сортировка по убыванию."""
+        self.sort_and_display(reverse=True)
 
 
 # Запуск программы
