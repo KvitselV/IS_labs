@@ -136,6 +136,22 @@ class Soiskatel:
             self.address == other.address
         )
 
+
+class ShortSoiskatel:
+    def __init__(self, soiskatel):
+        if not isinstance(soiskatel, Soiskatel):
+            raise ValueError("Expected an instance of Soiskatel.")
+        
+        self.first_name = soiskatel.first_name
+        self.last_name = soiskatel.last_name
+        self.profession = soiskatel.profession
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}, {self.profession}"
+
+    def __repr__(self):
+        return f"ShortSoiskatel({self.first_name} {self.last_name}, {self.profession})"
+
     # Геттеры
     @property
     def last_name(self):
@@ -210,3 +226,13 @@ print(repr(soiskatel))
 soiskatel1 = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
 soiskatel2 = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
 print(soiskatel1 == soiskatel2) 
+
+# Создаем объект Soiskatel
+soiskatel = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
+
+# Создаем краткую версию
+short_soiskatel = ShortSoiskatel(soiskatel)
+
+# Выводим краткую версию
+print(short_soiskatel)  # Ivan Ivanov, Developer
+print(repr(short_soiskatel))  # ShortSoiskatel(Ivan Ivanov, Developer)
