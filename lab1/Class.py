@@ -102,6 +102,40 @@ class Soiskatel:
             address=validated_data["address"]
         )
 
+
+    # Вывод полной версии объекта
+    def __str__(self):
+        return (
+            f"Full Details:\n"
+            f"Last Name: {self.last_name}\n"
+            f"First Name: {self.first_name}\n"
+            f"Middle Name: {self.middle_name}\n"
+            f"Qualification: {self.qualification}\n"
+            f"Profession: {self.profession}\n"
+            f"Date of Birth: {self.date_of_birth}\n"
+            f"Phone: {self.phone}\n"
+            f"Address: {self.address}"
+        )
+
+    # Вывод краткой версии объекта
+    def __repr__(self):
+        return f"Soiskatel({self.first_name} {self.last_name}, {self.profession})"
+
+    # Сравнение объектов на равенство
+    def __eq__(self, other):
+        if not isinstance(other, Soiskatel):
+            return NotImplemented
+        return (
+            self.last_name == other.last_name and
+            self.first_name == other.first_name and
+            self.middle_name == other.middle_name and
+            self.qualification == other.qualification and
+            self.profession == other.profession and
+            self.date_of_birth == other.date_of_birth and
+            self.phone == other.phone and
+            self.address == other.address
+        )
+
     # Геттеры
     @property
     def last_name(self):
@@ -168,3 +202,11 @@ class Soiskatel:
     def address(self, value):
         self.__address = value
 
+soiskatel = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
+print(soiskatel)
+
+print(repr(soiskatel))
+
+soiskatel1 = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
+soiskatel2 = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
+print(soiskatel1 == soiskatel2) 
