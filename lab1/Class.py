@@ -135,23 +135,7 @@ class Soiskatel:
             self.phone == other.phone and
             self.address == other.address
         )
-
-
-class ShortSoiskatel:
-    def __init__(self, soiskatel):
-        if not isinstance(soiskatel, Soiskatel):
-            raise ValueError("Expected an instance of Soiskatel.")
-        
-        self.first_name = soiskatel.first_name
-        self.last_name = soiskatel.last_name
-        self.profession = soiskatel.profession
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}, {self.profession}"
-
-    def __repr__(self):
-        return f"ShortSoiskatel({self.first_name} {self.last_name}, {self.profession})"
-
+    
     # Геттеры
     @property
     def last_name(self):
@@ -218,21 +202,37 @@ class ShortSoiskatel:
     def address(self, value):
         self.__address = value
 
-soiskatel = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
-print(soiskatel)
+class ShortSoiskatel:
+    def __init__(self, base_soiskatel):
+        if not isinstance(base_soiskatel, Soiskatel):
+            raise ValueError("Expected an instance of BaseSoiskatel.")
+        self._base = base_soiskatel  # Храним ссылку на базовый объект
 
-print(repr(soiskatel))
+    @property
+    def first_name(self):
+        return self._base.first_name  # Делегируем доступ
 
-soiskatel1 = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
-soiskatel2 = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
-print(soiskatel1 == soiskatel2) 
+    @property
+    def last_name(self):
+        return self._base.last_name  # Делегируем доступ
 
-# Создаем объект Soiskatel
-soiskatel = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
+    @property
+    def profession(self):
+        return self._base.profession  # Делегируем доступ
 
-# Создаем краткую версию
-short_soiskatel = ShortSoiskatel(soiskatel)
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}, {self.profession}"
+
+    def __repr__(self):
+        return f"ShortSoiskatel({self.first_name} {self.last_name}, {self.profession})"
+    
+
+
+# Создаем полный объект
+full_soiskatel = Soiskatel.from_string("Ivanov, Ivan, Ivanovich, Engineer, Developer, 1990-01-01, +1-234-567-8901, 123 Main St")
+
+# Создаем краткий объект
+short_soiskatel = ShortSoiskatel(full_soiskatel)
 
 # Выводим краткую версию
 print(short_soiskatel)  # Ivan Ivanov, Developer
-print(repr(short_soiskatel))  # ShortSoiskatel(Ivan Ivanov, Developer)
